@@ -1,6 +1,6 @@
 import unittest
-from parentnode import ParentNode
-from leafnode import LeafNode
+from src.parentnode import ParentNode
+from src.leafnode import LeafNode
 
 
 class TestParentNode(unittest.TestCase):
@@ -69,8 +69,6 @@ class TestParentNode(unittest.TestCase):
             parent_node.to_html(),
             "<div>    Text with spaces   </div>",
         )
-
-
 
 
 if __name__ == "__main__":
