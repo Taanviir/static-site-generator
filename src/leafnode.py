@@ -5,6 +5,9 @@ class LeafNode(HTMLNode):
     def __init__(self, tag: str, value: str, props: dict[str, str] = None) -> None:
         super().__init__(tag, value, None, props)
 
+    def __repr__(self):
+        return f"LeafNode({self.tag}, {self.value}, {self.props})"
+
     def to_html(self):
         if not self.value:
             raise ValueError("LeafNode must have a value.")
