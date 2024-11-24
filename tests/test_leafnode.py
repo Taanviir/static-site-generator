@@ -6,7 +6,9 @@ class TestLeafNode(unittest.TestCase):
     def test_leaf_node_with_tag_value_and_props(self):
         """Test LeafNode with a tag, value, and props."""
         node = LeafNode(tag="span", value="Leaf content", props={"class": "leaf-class"})
-        self.assertEqual(repr(node), "LeafNode(span, Leaf content, {'class': 'leaf-class'})")
+        self.assertEqual(
+            repr(node), "LeafNode(span, Leaf content, {'class': 'leaf-class'})"
+        )
 
     def test_leaf_node_without_props(self):
         """Test LeafNode with only a tag and value, no props."""
