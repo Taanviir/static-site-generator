@@ -1,20 +1,12 @@
-from textnode import TextNode, TextType
-from split_textnode import split_nodes_delimiter
+from extract_markdown_content import extract_markdown_images
 
 
 def main():
-    node = TextNode(
-        "This is text with a `code block` word. Here is another `code block` to test.",
-        TextType.TEXT,
-    )
-    node = TextNode("This is text with a `code block` word.", TextType.TEXT)
-
-    try:
-        nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-        for i, node in enumerate(nodes):
-            print(f"{i+1}. {node}")
-    except Exception as e:
-        print(f"Error: {e}")
+    text = """
+        Malformed image syntax: ![Alt text](https://example.com/image.jpg.
+        Missing alt text: ![](https://example.com/image.jpg).
+        """
+    print(extract_markdown_images(text))
 
 
 if __name__ == "__main__":
