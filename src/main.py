@@ -1,12 +1,16 @@
-from extract_markdown_content import extract_markdown_images
+from split_textnode import *
 
 
 def main():
-    text = """
-        Malformed image syntax: ![Alt text](https://example.com/image.jpg.
-        Missing alt text: ![](https://example.com/image.jpg).
-        """
-    print(extract_markdown_images(text))
+    old_nodes = [
+        TextNode(
+            "Here's an image: ![example](https://example.com/image.jpg)",
+            TextType.TEXT,
+        )
+    ]
+    new_nodes = split_nodes_image(old_nodes)
+    for node in new_nodes:
+        print(node)
 
 
 if __name__ == "__main__":

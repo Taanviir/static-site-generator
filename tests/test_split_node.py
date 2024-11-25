@@ -1,6 +1,10 @@
 import unittest
 from textnode import TextNode, TextType
-from src.split_textnode import split_nodes_delimiter
+from src.split_textnode import (
+    split_nodes_delimiter,
+    split_nodes_link,
+    split_nodes_image,
+)
 
 
 class TestSplitNodeFunction(unittest.TestCase):
@@ -76,6 +80,108 @@ class TestSplitNodeFunction(unittest.TestCase):
             split_nodes_delimiter([node], "`", TextType.CODE)
 
         self.assertEqual(str(context.exception), "Open delimiter detected!")
+
+
+class TestSplitNodesLink(unittest.TestCase):
+    def test_single_link(self):
+        old_nodes = [
+            TextNode(
+                "Visit [OpenAI](https://openai.com) for AI research.", TextType.TEXT
+            )
+        ]
+        expected = [
+            TextNode("Visit ", TextType.TEXT),
+            TextNode("OpenAI", TextType.LINK, "https://openai.com"),
+            TextNode(" for AI research.", TextType.TEXT),
+        ]
+        self.assertEqual(split_nodes_link(old_nodes), expected)
+
+    def test_multiple_links(self):
+        old_nodes = [
+            TextNode(
+                "Links: [Google](https://google.com) and [GitHub](https://github.com).",
+                TextType.TEXT,
+            )
+        ]
+        expected = [
+            TextNode("Links: ", TextType.TEXT),
+            TextNode("Google", TextType.LINK, "https://google.com"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("GitHub", TextType.LINK, "https://github.com"),
+            TextNode(".", TextType.TEXT),
+        ]
+        self.assertEqual(split_nodes_link(old_nodes), expected)
+
+    def test_no_links(self):
+        old_nodes = [TextNode("This text has no links.", TextType.TEXT)]
+        expected = [TextNode("This text has no links.", TextType.TEXT)]
+        self.assertEqual(split_nodes_link(old_nodes), expected)
+
+    def test_text_with_nested_and_incorrect_links(self):
+        old_nodes = [
+            TextNode(
+                "Check [this link](https://example.com and some broken text.",
+                TextType.TEXT,
+            )
+        ]
+        expected = [
+            TextNode(
+                "Check [this link](https://example.com and some broken text.",
+                TextType.TEXT,
+            )
+        ]
+        self.assertEqual(split_nodes_link(old_nodes), expected)
+
+
+class TestSplitNodesImage(unittest.TestCase):
+    def test_single_image(self):
+        old_nodes = [
+            TextNode(
+                "Here's an image: ![example](https://example.com/image.jpg)",
+                TextType.TEXT,
+            )
+        ]
+        expected = [
+            TextNode("Here's an image: ", TextType.TEXT),
+            TextNode("example", TextType.IMAGE, "https://example.com/image.jpg"),
+        ]
+        self.assertEqual(split_nodes_image(old_nodes), expected)
+
+    def test_multiple_images(self):
+        old_nodes = [
+            TextNode(
+                "Images: ![img1](https://example.com/1.jpg) and ![img2](https://example.com/2.jpg).",
+                TextType.TEXT,
+            )
+        ]
+        expected = [
+            TextNode("Images: ", TextType.TEXT),
+            TextNode("img1", TextType.IMAGE, "https://example.com/1.jpg"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("img2", TextType.IMAGE, "https://example.com/2.jpg"),
+            TextNode(".", TextType.TEXT),
+        ]
+        self.assertEqual(split_nodes_image(old_nodes), expected)
+
+    def test_no_images(self):
+        old_nodes = [TextNode("This text has no images.", TextType.TEXT)]
+        expected = [TextNode("This text has no images.", TextType.TEXT)]
+        self.assertEqual(split_nodes_image(old_nodes), expected)
+
+    def test_text_with_nested_and_incorrect_images(self):
+        old_nodes = [
+            TextNode(
+                "Here's a broken image syntax: ![alt text(https://example.com).",
+                TextType.TEXT,
+            )
+        ]
+        expected = [
+            TextNode(
+                "Here's a broken image syntax: ![alt text(https://example.com).",
+                TextType.TEXT,
+            )
+        ]
+        self.assertEqual(split_nodes_image(old_nodes), expected)
 
 
 if __name__ == "__main__":
