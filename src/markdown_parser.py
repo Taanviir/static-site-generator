@@ -115,7 +115,9 @@ def quote_to_html_node(block: str) -> ParentNode:
 
 def unordered_list_to_html_node(block: str) -> ParentNode:
     items = [line.strip() for line in block.splitlines()]
-    list_items = [ParentNode("li", children=text_to_children(item[2:])) for item in items]
+    list_items = [
+        ParentNode("li", children=text_to_children(item[2:])) for item in items
+    ]
     return ParentNode("ul", children=list_items)
 
 
@@ -131,3 +133,15 @@ def ordered_list_to_html_node(block: str) -> ParentNode:
 def paragraph_to_html_node(block: str) -> ParentNode:
     paragraph = " ".join(block.splitlines())
     return ParentNode("p", children=text_to_children(paragraph))
+
+
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    block = [
+        block.strip("# ").strip()
+        for block in blocks
+        if block.startswith("# ")
+    ]
+    if len(block) < 1:
+        raise ValueError("No title given!")
+    return block[0]

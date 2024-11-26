@@ -9,6 +9,7 @@ from src import (
     markdown_to_blocks,
     block_to_block_type,
     markdown_to_html_node,
+    extract_title,
 )
 
 
@@ -273,6 +274,38 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
             ],
         )
         self.assertEqual(node_to_dict(html_node), node_to_dict(expected))
+
+
+class TestExtractTitle(unittest.TestCase):
+    def test_single_title(self):
+        """Test when there is a single title in the markdown."""
+        markdown = "# Title\n\nSome text\n\nAnother line"
+
+        result = extract_title(markdown)
+        self.assertEqual(result, "Title")
+
+    def test_no_title(self):
+        """Test when there are no titles in the markdown."""
+        markdown = "Some text\n\nAnother line"
+
+        with self.assertRaises(ValueError) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No title given!")
+
+    def test_multiple_titles(self):
+        """Test when there are multiple titles in the markdown."""
+        markdown = "# Title1\n\n# Title2\n\nSome text"
+
+        result = extract_title(markdown)
+        self.assertEqual(result, "Title1")
+
+    def test_empty_markdown(self):
+        """Test when the markdown is empty."""
+        markdown = ""
+
+        with self.assertRaises(ValueError) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No title given!")
 
 
 if __name__ == "__main__":

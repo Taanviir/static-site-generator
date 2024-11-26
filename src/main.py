@@ -1,11 +1,10 @@
-from markdown_parser import markdown_to_html_node
-from copytree import copytree
-import os
+from markdown_parser import extract_title
 
 
 def main():
-    src_dir = "./static/"
-    copytree(src_dir, "./public/")
+    markdown = "# Title\n\nSome text\n\nAnother line"
+    title = extract_title(markdown)
+    print(title)
 
 
 if __name__ == "__main__":
