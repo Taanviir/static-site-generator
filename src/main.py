@@ -24,10 +24,17 @@ def main():
     * This is the first list item in a list block
     * This is a list item
     * This is another list item
+
+    ```
+        def test():
+            print("hello world")
+        test()
+    ```
     """
     )
 
-    markdown_to_html_node(markdown)
+    node = markdown_to_html_node(markdown)
+    print(node.children)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,14 @@
 import unittest
 from src import (
+    HTMLNode,
+    LeafNode,
     TextNode,
     TextType,
     text_node_to_html_node,
     text_to_textnodes,
     markdown_to_blocks,
     block_to_block_type,
+    markdown_to_html_node,
 )
 
 
@@ -215,6 +218,61 @@ class TestBlockToBlockType(unittest.TestCase):
         self.assertEqual(
             block_to_block_type("Random text\nwith multiple lines"), "paragraph"
         )
+
+
+def node_to_dict(node):
+    """Convert an HTMLNode or LeafNode to a dictionary for comparison."""
+    if isinstance(node, LeafNode):
+        return {
+            "type": "LeafNode",
+            "tag": node.tag,
+            "value": node.value,
+            "props": node.props,
+        }
+    elif isinstance(node, HTMLNode):
+        return {
+            "type": "HTMLNode",
+            "tag": node.tag,
+            "value": node.value,
+            "children": [node_to_dict(child) for child in node.children],
+        }
+    return None
+
+
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    def test_simple_heading(self):
+        """Test a simple heading without inline formatting."""
+        markdown = "# Simple Heading"
+        html_node = markdown_to_html_node(markdown)
+        expected = HTMLNode(
+            "div",
+            None,
+            children=[
+                HTMLNode("h1", children=[LeafNode(None, "Simple Heading")]),
+            ],
+        )
+        self.assertEqual(node_to_dict(html_node), node_to_dict(expected))
+
+    def test_heading_with_inline_formatting(self):
+        """Test a heading with inline formatting."""
+        markdown = "# This is **bold** and *italic*"
+        html_node = markdown_to_html_node(markdown)
+        expected = HTMLNode(
+            "div",
+            None,
+            children=[
+                HTMLNode(
+                    "h1",
+                    children=[
+                        LeafNode(None, "This is "),
+                        LeafNode("b", "bold"),
+                        LeafNode(None, " and "),
+                        LeafNode("i", "italic"),
+                    ],
+                )
+            ],
+        )
+        self.assertEqual(node_to_dict(html_node), node_to_dict(expected))
 
 
 if __name__ == "__main__":
