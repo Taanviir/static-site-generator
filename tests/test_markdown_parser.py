@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
-from text_to_textnodes import text_to_textnodes
+from src.markdown_parser import text_to_textnodes, markdown_to_blocks
 
 
 class TestTextToTextNodes(unittest.TestCase):
@@ -80,6 +80,77 @@ class TestTextToTextNodes(unittest.TestCase):
             TextNode(" example.", TextType.TEXT),
         ]
         self.assertEqual(nodes, expected)
+
+
+class TestGetMarkdownBlocks(unittest.TestCase):
+    def test_basic_markdown(self):
+        """Test splitting a basic Markdown string with multiple blocks."""
+        markdown = """\
+# Heading
+
+This is a paragraph.
+
+* List item 1
+* List item 2
+"""
+        expected = ["# Heading", "This is a paragraph.", "* List item 1\n* List item 2"]
+        self.assertEqual(markdown_to_blocks(markdown), expected)
+
+    def test_empty_markdown(self):
+        """Test an empty Markdown string."""
+        markdown = ""
+        expected = []
+        self.assertEqual(markdown_to_blocks(markdown), expected)
+
+    def test_only_whitespace(self):
+        """Test a Markdown string with only whitespace."""
+        markdown = "   \n\n  \n"
+        expected = []
+        self.assertEqual(markdown_to_blocks(markdown), expected)
+
+    def test_trailing_newlines(self):
+        """Test a Markdown string with trailing newlines."""
+        markdown = """\
+# Heading
+
+Paragraph with text.
+
+"""
+        expected = ["# Heading", "Paragraph with text."]
+        self.assertEqual(markdown_to_blocks(markdown), expected)
+
+    def test_multiple_empty_lines(self):
+        """Test a Markdown string with multiple consecutive empty lines."""
+        markdown = """\
+# Heading
+
+
+This is a paragraph.
+
+
+* List item 1
+
+
+* List item 2
+"""
+        expected = [
+            "# Heading",
+            "This is a paragraph.",
+            "* List item 1",
+            "* List item 2",
+        ]
+        self.assertEqual(markdown_to_blocks(markdown), expected)
+
+    def test_no_double_newlines(self):
+        """Test a Markdown string without any double newlines."""
+        markdown = """\
+# Heading
+This is a paragraph.
+* List item 1
+* List item 2
+"""
+        expected = ["# Heading\nThis is a paragraph.\n* List item 1\n* List item 2"]
+        self.assertEqual(markdown_to_blocks(markdown), expected)
 
 
 if __name__ == "__main__":
