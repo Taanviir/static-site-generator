@@ -70,7 +70,7 @@ def text_to_children(text: str) -> list[HTMLNode]:
     return leaf_nodes
 
 
-def markdown_to_html_node(markdown: str) -> HTMLNode:
+def markdown_to_html_node(markdown: str) -> ParentNodeNode:
     blocks = markdown_to_blocks(markdown)
     nodes = []
 
@@ -91,7 +91,7 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
                 node = paragraph_to_html_node(block)
         nodes.append(node)
 
-    return ParentNode("div", None, nodes)
+    return ParentNode("div", nodes)
 
 
 def heading_to_html_node(block: str) -> ParentNode:
