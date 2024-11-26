@@ -1,15 +1,10 @@
-from split_textnode import *
+from text_to_textnodes import text_to_textnodes
 
 
 def main():
-    old_nodes = [
-        TextNode(
-            "Here's an image: ![example](https://example.com/image.jpg)",
-            TextType.TEXT,
-        )
-    ]
-    new_nodes = split_nodes_image(old_nodes)
-    for node in new_nodes:
+    text = "This is an image ![alt text](url)."
+    nodes = text_to_textnodes(text)
+    for node in nodes:
         print(node)
 
 
