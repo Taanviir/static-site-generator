@@ -91,7 +91,7 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
                 node = paragraph_to_html_node(block)
         nodes.append(node)
 
-    return HTMLNode("div", None, nodes)
+    return ParentNode("div", None, nodes)
 
 
 def heading_to_html_node(block: str) -> ParentNode:
