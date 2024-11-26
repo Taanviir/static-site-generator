@@ -135,13 +135,9 @@ def paragraph_to_html_node(block: str) -> ParentNode:
     return ParentNode("p", children=text_to_children(paragraph))
 
 
-def extract_title(markdown):
-    blocks = markdown_to_blocks(markdown)
-    block = [
-        block.strip("# ").strip()
-        for block in blocks
-        if block.startswith("# ")
-    ]
-    if len(block) < 1:
-        raise ValueError("No title given!")
-    return block[0]
+def extract_title(markdown: str) -> str:
+    lines = markdown.splitlines()
+    for line in lines:
+        if line.startswith("# "):
+            return line.strip()[2:]
+    raise ValueError("No title given!")
