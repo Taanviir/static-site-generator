@@ -1,5 +1,11 @@
 import unittest
-from src import text_to_textnodes, TextNode, TextType, markdown_to_blocks
+from src import (
+    text_to_textnodes,
+    TextNode,
+    TextType,
+    markdown_to_blocks,
+    block_to_block_type,
+)
 
 
 class TestTextToTextNodes(unittest.TestCase):
@@ -150,6 +156,35 @@ This is a paragraph.
 """
         expected = ["# Heading\nThis is a paragraph.\n* List item 1\n* List item 2"]
         self.assertEqual(markdown_to_blocks(markdown), expected)
+
+
+class TestBlockToBlockType(unittest.TestCase):
+    def test_heading(self):
+        self.assertEqual(block_to_block_type("# Heading"), "heading")
+        self.assertEqual(block_to_block_type("### Subheading"), "heading")
+
+    def test_code_block(self):
+        self.assertEqual(block_to_block_type("```\nCode block\n```"), "code")
+
+    def test_quote_block(self):
+        self.assertEqual(block_to_block_type("> Quote\n> Another line"), "quote")
+
+    def test_unordered_list(self):
+        self.assertEqual(block_to_block_type("* Item 1\n* Item 2"), "unordered_list")
+        self.assertEqual(block_to_block_type("- Item 1\n- Item 2"), "unordered_list")
+
+    def test_ordered_list(self):
+        self.assertEqual(
+            block_to_block_type("1. First\n2. Second\n3. Third"), "ordered_list"
+        )
+
+    def test_paragraph(self):
+        self.assertEqual(
+            block_to_block_type("This is a normal paragraph."), "paragraph"
+        )
+        self.assertEqual(
+            block_to_block_type("Random text\nwith multiple lines"), "paragraph"
+        )
 
 
 if __name__ == "__main__":
