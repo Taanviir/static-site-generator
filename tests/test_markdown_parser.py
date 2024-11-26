@@ -1,11 +1,41 @@
 import unittest
 from src import (
-    text_to_textnodes,
     TextNode,
     TextType,
+    text_node_to_html_node,
+    text_to_textnodes,
     markdown_to_blocks,
     block_to_block_type,
 )
+
+
+class TestTextNodeToHTMLNode(unittest.TestCase):
+    def test_text_to_leafnode(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_bold(self):
+        node = TextNode("This is bold", TextType.BOLD)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is bold")
+
+    def test_image(self):
+        node = TextNode("This is an image", TextType.IMAGE, "https://www.boot.dev")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertEqual(
+            html_node.props,
+            {"src": "https://www.boot.dev", "alt": "This is an image"},
+        )
+
+    def test_invalid_type(self):
+        with self.assertRaises(Exception) as context:
+            TextNode("Invalid type", "unknown")
+        self.assertIn("Invalid type used for text node", str(context.exception))
 
 
 class TestTextToTextNodes(unittest.TestCase):

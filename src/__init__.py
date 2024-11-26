@@ -1,4 +1,3 @@
-from extract_markdown_content import *
 from htmlnode import *
 from leafnode import *
 from markdown_parser import *

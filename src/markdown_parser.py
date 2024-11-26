@@ -1,5 +1,25 @@
 from split_textnode import split_nodes_delimiter, split_nodes_image, split_nodes_link
 from textnode import TextNode, TextType
+from htmlnode import HTMLNode
+from leafnode import LeafNode
+
+
+def text_node_to_html_node(text_node: TextNode) -> LeafNode:
+    match text_node.text_type:
+        case TextType.TEXT:
+            return LeafNode(None, text_node.text)
+        case TextType.BOLD:
+            return LeafNode("b", text_node.text)
+        case TextType.ITALIC:
+            return LeafNode("i", text_node.text)
+        case TextType.CODE:
+            return LeafNode("code", text_node.text)
+        case TextType.LINK:
+            return LeafNode("a", text_node.text, {"href": text_node.url})
+        case TextType.IMAGE:
+            return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
+        case _:
+            raise Exception(f"Invalid type used for text node: {text_node.text_type}")
 
 
 def text_to_textnodes(text: str) -> list[TextNode]:
@@ -34,6 +54,27 @@ def block_to_block_type(block: str) -> str:
         return "quote"
     elif all(line.startswith(("- ", "* ")) for line in block.splitlines()):
         return "unordered_list"
-    elif all(line.startswith(f"{i}. ") for i, line in enumerate(block.splitlines(), start=1)):
+    elif all(
+        line.startswith(f"{i}. ") for i, line in enumerate(block.splitlines(), start=1)
+    ):
         return "ordered_list"
     return "paragraph"
+
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+
+    for block in blocks:
+        match block_to_block_type(block):
+            case "heading":
+                HTMLNode(f"h{block.count("#")}", block)
+            case "code":
+                HTMLNode("code", block)
+            case "quote":
+                HTMLNode("blockquote", block)
+            case "unordered_list":
+                HTMLNode("ul", block)
+            case "ordered_list":
+                HTMLNode("ol", block)
+            case "paragraph":
+                HTMLNode("p", block)

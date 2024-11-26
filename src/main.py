@@ -1,5 +1,5 @@
 from textwrap import dedent
-from markdown_parser import markdown_to_blocks, block_to_block_type
+from markdown_parser import markdown_to_html_node
 
 
 def main():
@@ -27,10 +27,7 @@ def main():
     """
     )
 
-    blocks = markdown_to_blocks(markdown)
-    for block in blocks:
-        block_type = block_to_block_type(block)
-        print(f"type: {block_type}, {block}")
+    markdown_to_html_node(markdown)
 
 
 if __name__ == "__main__":
