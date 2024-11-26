@@ -1,6 +1,6 @@
 from split_textnode import split_nodes_delimiter, split_nodes_image, split_nodes_link
 from textnode import TextNode, TextType
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -78,36 +78,56 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
         block_type = block_to_block_type(block)
         match block_type:
             case "heading":
-                heading_level = block.count("#", 0, block.index(" "))
-                text = block[heading_level + 1 :].strip()
-                node = HTMLNode(f"h{heading_level}", children=text_to_children(text))
+                node = heading_to_html_node(block)
             case "code":
-                code_content = block.strip("```").strip()
-                code = HTMLNode("code", children=text_to_children(code_content))
-                node = HTMLNode("pre", children=[code])
+                node = code_to_html_node(block)
             case "quote":
-                quote_content = "\n".join(
-                    line[1:].strip() for line in block.splitlines()
-                )
-                node = HTMLNode("blockquote", children=text_to_children(quote_content))
+                node = quote_to_html_node(block)
             case "unordered_list":
-                items = [line.strip() for line in block.splitlines()]
-                list_items = [
-                    HTMLNode("li", children=text_to_children(item[2:]))
-                    for item in items
-                ]
-                node = HTMLNode("ul", children=list_items)
+                node = unordered_list_to_html_node(block)
             case "ordered_list":
-                items = [line.strip() for line in block.splitlines()]
-                list_items = [
-                    HTMLNode(
-                        "li", children=text_to_children(item[item.index(".") + 2 :])
-                    )
-                    for item in items
-                ]
-                node = HTMLNode("ol", children=list_items)
+                node = ordered_list_to_html_node(block)
             case "paragraph":
-                node = HTMLNode("p", children=text_to_children(block))
+                node = paragraph_to_html_node(block)
         nodes.append(node)
 
     return HTMLNode("div", None, nodes)
+
+
+def heading_to_html_node(block: str) -> ParentNode:
+    heading_level = block.count("#", 0, block.index(" "))
+    text = block[heading_level + 1 :].strip()
+    return ParentNode(f"h{heading_level}", children=text_to_children(text))
+
+
+def code_to_html_node(block: str) -> ParentNode:
+    if not block.startswith("```") or not block.endswith("```"):
+        raise ValueError("Invalid code block")
+    code_content = block.strip("```").strip()
+    code = ParentNode("code", children=text_to_children(code_content))
+    return ParentNode("pre", children=[code])
+
+
+def quote_to_html_node(block: str) -> ParentNode:
+    quote_content = "\n".join(line[1:].strip() for line in block.splitlines())
+    return ParentNode("blockquote", children=text_to_children(quote_content))
+
+
+def unordered_list_to_html_node(block: str) -> ParentNode:
+    items = [line.strip() for line in block.splitlines()]
+    list_items = [ParentNode("li", children=text_to_children(item[2:])) for item in items]
+    return ParentNode("ul", children=list_items)
+
+
+def ordered_list_to_html_node(block: str) -> ParentNode:
+    items = [line.strip() for line in block.splitlines()]
+    list_items = [
+        ParentNode("li", children=text_to_children(item[item.index(".") + 2 :]))
+        for item in items
+    ]
+    return ParentNode("ol", children=list_items)
+
+
+def paragraph_to_html_node(block: str) -> ParentNode:
+    paragraph = " ".join(block.splitlines())
+    return ParentNode("p", children=text_to_children(paragraph))
