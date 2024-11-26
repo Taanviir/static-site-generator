@@ -1,9 +1,10 @@
 import unittest
-from textnode import TextNode, TextType
-from src.split_textnode import (
+from src import (
     split_nodes_delimiter,
     split_nodes_link,
     split_nodes_image,
+    TextNode,
+    TextType,
 )
 
 

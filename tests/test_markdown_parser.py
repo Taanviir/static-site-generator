@@ -1,6 +1,5 @@
 import unittest
-from textnode import TextNode, TextType
-from src.markdown_parser import text_to_textnodes, markdown_to_blocks
+from src import text_to_textnodes, TextNode, TextType, markdown_to_blocks
 
 
 class TestTextToTextNodes(unittest.TestCase):
