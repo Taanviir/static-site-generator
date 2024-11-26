@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from generate_page import generate_page
+from generate_page import generate_pages_recursive
 from copytree import copytree
 
 
@@ -17,14 +17,9 @@ def main():
     print("Copying static files to public directory...")
     copytree(src_dir, dest_dir)
 
-    from_dir = "./content"
+    dir_path_content = "./content"
     template_path = "./template.html"
-
-    generate_page(
-        os.path.join(from_dir, "index.md"),
-        template_path,
-        os.path.join(dest_dir, "index.html"),
-    )
+    generate_pages_recursive(dir_path_content, template_path, dest_dir)
 
 
 if __name__ == "__main__":

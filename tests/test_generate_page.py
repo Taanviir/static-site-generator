@@ -1,6 +1,6 @@
 import unittest
 
-from markdown_parser import extract_title
+from src import extract_title
 
 
 class TestExtractTitle(unittest.TestCase):
